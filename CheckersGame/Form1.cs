@@ -14,43 +14,33 @@ namespace CheckersGame
     {
         const int mapSize = 8;
         const int cellSize = 50;
-
         int currentPlayer;
-
         List<Button> simpleSteps = new List<Button>();
 
-        int countEatSteps = 0;
+        int countEatSteps = 0;//кол-во возможных кодов
         Button prevButton;
         Button pressedButton;
         bool isContinue = false;
-
         bool isMoving;
-
         int[,] map = new int[mapSize, mapSize];
 
         Button[,] buttons = new Button[mapSize, mapSize];
-
         Image whiteFigure;
         Image blackFigure;
 
         public Form1()
         {
             InitializeComponent();
-
             whiteFigure = new Bitmap(new Bitmap(@"C:\Users\sodrk\Desktop\w.png"), new Size(cellSize - 10, cellSize - 10));
             blackFigure = new Bitmap(new Bitmap(@"C:\Users\sodrk\Desktop\b.png"), new Size(cellSize - 10, cellSize - 10));
-
             this.Text = "Checkers";
-
             Init();
         }
-
         public void Init()
         {
             currentPlayer = 1;
             isMoving = false;
             prevButton = null;
-
             map = new int[mapSize,mapSize] {
                 { 0,1,0,1,0,1,0,1 },
                 { 1,0,1,0,1,0,1,0 },
@@ -61,15 +51,12 @@ namespace CheckersGame
                 { 0,2,0,2,0,2,0,2 },
                 { 2,0,2,0,2,0,2,0 }
             };
-
             CreateMap();
         }
-
         public void ResetGame()
         {
             bool player1 = false;
             bool player2 = false;
-
             for(int i = 0; i < mapSize; i++)
             {
                 for (int j = 0; j < mapSize; j++)
@@ -86,12 +73,10 @@ namespace CheckersGame
                 Init();
             }
         }
-
         public void CreateMap()
         {
             this.Width = (mapSize + 1) * cellSize;
             this.Height = (mapSize + 1) * cellSize;
-
             for(int i = 0; i < mapSize; i++)
             {
                 for (int j = 0; j < mapSize; j++)
@@ -106,21 +91,17 @@ namespace CheckersGame
 
                     button.BackColor = GetPrevButtonColor(button);
                     button.ForeColor = Color.Red;
-
                     buttons[i, j] = button;
-
                     this.Controls.Add(button);
                 }
             }
         }
-
         public void SwitchPlayer()
         {
             currentPlayer = currentPlayer == 1 ? 2 : 1;
             ResetGame();
         }
-
-        public Color GetPrevButtonColor(Button prevButton)
+        public Color GetPrevButtonColor(Button prevButton)//меняет цвет кнопки
         {
             if ((prevButton.Location.Y/cellSize % 2) != 0)
             {
@@ -138,14 +119,12 @@ namespace CheckersGame
             }
             return Color.White;
         }
-
         public void OnFigurePress(object sender, EventArgs e)
         {
             if (prevButton != null)
                 prevButton.BackColor = GetPrevButtonColor(prevButton);
 
             pressedButton = sender as Button;
-
             if(map[pressedButton.Location.Y/cellSize,pressedButton.Location.X/cellSize] != 0 && map[pressedButton.Location.Y / cellSize, pressedButton.Location.X / cellSize] == currentPlayer)
             {
                 CloseSteps();
@@ -156,7 +135,6 @@ namespace CheckersGame
                 if(pressedButton.Text == "D")
                 ShowSteps(pressedButton.Location.Y / cellSize, pressedButton.Location.X / cellSize,false);
                 else ShowSteps(pressedButton.Location.Y / cellSize, pressedButton.Location.X / cellSize);
-
                 if (isMoving)
                 {
                     CloseSteps();
@@ -206,10 +184,8 @@ namespace CheckersGame
                     }
                 }
             }
-
             prevButton = pressedButton;
         }
-
         public void ShowPossibleSteps()
         {
             bool isOneStep = true;
@@ -235,20 +211,17 @@ namespace CheckersGame
             if (!isEatStep)
                 ActivateAllButtons();
         }
-
         public void SwitchButtonToCheat(Button button)
         {
             if (map[button.Location.Y / cellSize, button.Location.X / cellSize] == 1 && button.Location.Y / cellSize == mapSize - 1) 
             {
                 button.Text = "D";
-                
             }
             if (map[button.Location.Y / cellSize, button.Location.X / cellSize] == 2 && button.Location.Y / cellSize == 0)
             {
                 button.Text = "D";
             }
         }
-
         public void DeleteEaten(Button endButton, Button startButton)
         {
             int count = Math.Abs(endButton.Location.Y / cellSize - startButton.Location.Y / cellSize);
@@ -268,9 +241,7 @@ namespace CheckersGame
                 j += startIndexY;
                 currCount++;
             }
-
         }
-
         public void ShowSteps(int iCurrFigure, int jCurrFigure,bool isOnestep = true)
         {
             simpleSteps.Clear();
@@ -278,7 +249,6 @@ namespace CheckersGame
             if (countEatSteps > 0)
                 CloseSimpleSteps(simpleSteps);
         }
-
         public void ShowDiagonal(int IcurrFigure, int JcurrFigure, bool isOneStep = false)
         {
             int j = JcurrFigure + 1;
@@ -287,17 +257,14 @@ namespace CheckersGame
                 if (currentPlayer == 1 && isOneStep && !isContinue) break;
                 if (IsInsideBorders(i, j))
                 {
-                    if (!DeterminePath(i, j))
-                        break;
+                    if (!DeterminePath(i, j)) break;
                 }
                 if (j < 7)
                     j++;
                 else break;
-
                 if (isOneStep)
                     break;
             }
-
             j = JcurrFigure - 1;
             for (int i = IcurrFigure - 1; i >= 0; i--)
             {
@@ -314,7 +281,6 @@ namespace CheckersGame
                 if (isOneStep)
                     break;
             }
-
             j = JcurrFigure - 1;
             for (int i = IcurrFigure + 1; i < 8; i++)
             {
@@ -327,11 +293,9 @@ namespace CheckersGame
                 if (j > 0)
                     j--;
                 else break;
-
                 if (isOneStep)
                     break;
             }
-
             j = JcurrFigure + 1;
             for (int i = IcurrFigure + 1; i < 8; i++)
             {
@@ -344,15 +308,12 @@ namespace CheckersGame
                 if (j < 7)
                     j++;
                 else break;
-
                 if (isOneStep)
                     break;
             }
         }
-        
         public bool DeterminePath(int ti,int tj)
         {
-            
             if (map[ti, tj] == 0 && !isContinue)
             {
                 buttons[ti, tj].BackColor = Color.Yellow;
@@ -360,19 +321,16 @@ namespace CheckersGame
                 simpleSteps.Add(buttons[ti, tj]);
             }else
             {
-                
                 if (map[ti, tj] != currentPlayer)
                 {
                     if (pressedButton.Text == "D")
                         ShowProceduralEat(ti, tj, false);
                     else ShowProceduralEat(ti, tj);
                 }
-
                 return false;
             }
             return true;
         }
-
         public void CloseSimpleSteps(List<Button> simpleSteps)
         {
             if (simpleSteps.Count > 0)
@@ -384,7 +342,7 @@ namespace CheckersGame
                 }
             }
         }
-        public void ShowProceduralEat(int i,int j,bool isOneStep = true)
+        public void ShowProceduralEat(int i,int j,bool isOneStep = true)//ходы
         {
             int dirX = i - pressedButton.Location.Y / cellSize;
             int dirY = j - pressedButton.Location.X / cellSize;
@@ -393,7 +351,7 @@ namespace CheckersGame
             int il = i;
             int jl = j;
             bool isEmpty = true;
-            while (IsInsideBorders(il, jl))
+            while (IsInsideBorders(il, jl))//просчитывает ход
             {
                 if (map[il, jl] != 0 && map[il, jl] != currentPlayer)
                 { 
@@ -402,17 +360,16 @@ namespace CheckersGame
                 }
                 il += dirX;
                 jl += dirY;
-
                 if (isOneStep)
                     break;
             }
             if (isEmpty)
                 return;
-            List<Button> toClose = new List<Button>();
+            List<Button> toClose = new List<Button>();//кнопки
             bool closeSimple = false;
             int ik = il + dirX;
             int jk = jl + dirY;
-            while (IsInsideBorders(ik,jk))
+            while (IsInsideBorders(ik,jk))//проверка карты на границы
             {
                 if (map[ik, jk] == 0 )
                 {
@@ -438,16 +395,14 @@ namespace CheckersGame
             {
                 CloseSimpleSteps(toClose);
             }
-            
         }
-
         public bool IsButtonHasEatStep(int IcurrFigure, int JcurrFigure, bool isOneStep, int[] dir)
         {
             bool eatStep = false;
             int j = JcurrFigure + 1;
             for (int i = IcurrFigure - 1; i >= 0; i--)
             {
-                if (currentPlayer == 1 && isOneStep && !isContinue) break;
+                if (currentPlayer == 1 && isOneStep && !isContinue) break;//отключение проверки направления
                 if (dir[0] == 1 && dir[1] == -1 && !isOneStep)break;
                 if (IsInsideBorders(i, j))
                 {
@@ -464,11 +419,9 @@ namespace CheckersGame
                 if (j < 7)
                     j++;
                 else break;
-
                 if (isOneStep)
                     break;
             }
-
             j = JcurrFigure - 1;
             for (int i = IcurrFigure - 1; i >= 0; i--)
             {
@@ -493,7 +446,6 @@ namespace CheckersGame
                 if (isOneStep)
                     break;
             }
-
             j = JcurrFigure - 1;
             for (int i = IcurrFigure + 1; i < 8; i++)
             {
@@ -514,7 +466,6 @@ namespace CheckersGame
                 if (j > 0)
                     j--;
                 else break;
-
                 if (isOneStep)
                     break;
             }
@@ -545,7 +496,6 @@ namespace CheckersGame
             }
             return eatStep;
         }
-
         public void CloseSteps()
         {
             for (int i = 0; i < mapSize; i++)
@@ -556,7 +506,6 @@ namespace CheckersGame
                 }
             }
         }
-
         public bool IsInsideBorders(int ti,int tj)
         {
             if(ti>=mapSize || tj >= mapSize || ti<0 || tj < 0)
@@ -565,7 +514,6 @@ namespace CheckersGame
             }
             return true;
         }
-
         public void ActivateAllButtons()
         {
             for (int i = 0; i < mapSize; i++)
@@ -576,7 +524,6 @@ namespace CheckersGame
                 }
             }
         }
-
         public void DeactivateAllButtons()
         {
             for (int i = 0; i < mapSize; i++)
@@ -587,6 +534,5 @@ namespace CheckersGame
                 }
             }
         }
-        
     }
 }
